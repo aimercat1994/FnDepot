@@ -1,0 +1,51 @@
+{
+  "schema_version": "2",
+  "source_info": {
+    "name": "aimercat 应用源",
+    "author": "aimercat",
+    "homepage": "https://github.com/aimercat1994/FnDepot",
+    "description": "个人开发的飞牛 fnOS 应用，当前收录：无损剪辑。"
+  },
+  "apps": {
+    "videocut": {
+      "display_name": "无损剪辑",
+      "desc": "视频无损切割与合并工具。在文件管理器中右键视频文件选择「打开方式 → 无损剪辑」即可打开，按关键帧标记区间后无损剪切；也可把多个视频首尾相接合并为一个文件。全程流复制（-c copy），不重新编码、不损失画质。",
+      "platform": [
+        "all"
+      ],
+      "categories": [
+        "影音娱乐"
+      ],
+      "icon_url": "./videocut/ICON.PNG",
+      "preview_urls": [
+        "./videocut/Preview/1.png",
+        "./videocut/Preview/2.png",
+        "./videocut/Preview/3.png"
+      ],
+      "readme_url": "./videocut/README.md",
+      "bug_report_url": "https://github.com/aimercat1994/fnos-videocut/issues",
+      "maintainer": "aimercat",
+      "maintainer_url": "https://github.com/aimercat1994",
+      "distributor": "aimercat",
+      "distributor_url": "https://github.com/aimercat1994",
+      "run_as": "package",
+      "install_type": "",
+      "is_docker": false,
+      "service_port": "18299",
+      "releases": {
+        "1.2.0": {
+          "changelog": "双击视频文件（或右键「打开方式 → 无损剪辑」）现在先进入单纯的播放器界面，点右上角「剪辑」才进入剪辑界面；剪辑界面新增「播放器」按钮可随时返回。播放器模式下不预先读取关键帧，大文件打开更快。",
+          "updated_at": "2026-10-25T23:08:35+08:00",
+          "os_min_version": "1.1.3100",
+          "packages": {
+            "all": {
+              "download_url": "./videocut/fpk/videocut_v1.2.0.fpk",
+              "sha256": "bd4900bbfe54d4012800e57614faf5ee7bf2af56cd32ac0200c294dd7b81458f",
+              "size": 87571
+            }
+          }
+        }
+      }
+    }
+  }
+}
