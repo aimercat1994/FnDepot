@@ -18,6 +18,14 @@ https://raw.githubusercontent.com/aimercat1994/FnDepot/main/fnpack.json
 
 客户端读取仓库**默认分支**根目录下的 `fnpack.json`；本仓库只依赖这个文件，目录结构可自由调整。
 
+> **访问 `raw.githubusercontent.com` 慢或被拦截时**，可改用 jsDelivr 直链添加（内容与 GitHub 完全一致，已校验 sha256）：
+>
+> ```text
+> https://cdn.jsdelivr.net/gh/aimercat1994/FnDepot@main/fnpack.json
+> ```
+>
+> jsDelivr 对 `@main` 有缓存（通常数小时），刚发布的新版本可能需要等缓存过期。
+
 ## 收录应用
 
 | 应用 | 版本 | 分类 | 说明 |
