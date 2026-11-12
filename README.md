@@ -30,7 +30,7 @@ https://raw.githubusercontent.com/aimercat1994/FnDepot/main/fnpack.json
 
 | 应用 | 版本 | 分类 | 说明 |
 | --- | --- | --- | --- |
-| 无损剪辑（`videocut`） | 1.2.0 | 影音娱乐 | 视频无损切割与合并：文件管理器「打开方式」直接打开、按关键帧取区间、多段无损合并，全程流复制不重新编码 |
+| 无损剪辑（`videocut`） | 1.2.4 | 影音娱乐 | 视频无损切割与合并：文件管理器「打开方式」直接打开、按关键帧取区间、多段无损合并，全程流复制不重新编码 |
 
 每位应用的详细说明见各自目录下的 `README.md`，源码在 [fnos-videocut](https://github.com/aimercat1994/fnos-videocut)。
 
@@ -42,7 +42,7 @@ videocut/
   ICON.PNG               # 应用图标（256×256）
   Preview/1..3.png       # 详情页预览图
   README.md              # 详情页说明
-  fpk/videocut_v1.2.0.fpk
+  fpk/videocut_v1.2.4.fpk
 scripts/
   make_source.py         # 从构建好的 .fpk 生成/更新 fnpack.json
   check_source.py        # 发布前自检（字段、分类、哈希、大小、manifest 一致性）

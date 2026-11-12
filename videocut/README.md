@@ -4,17 +4,15 @@
 
 在飞牛文件管理器里选中视频 → 右键 → **打开方式 → 无损剪辑**，就能直接打开这个工具：拖时间轴、按关键帧标记区间、无损剪切；也可以把多个视频首尾相接合并成一个文件。全程流复制（`-c copy`），**不重新编码、不损失画质、速度接近磁盘拷贝**。
 
-当前版本：**1.1.1**　　运行要求：**fnOS ≥ 1.1.3100**
+当前版本：**1.2.4**　　运行要求：**fnOS ≥ 1.1.3100**
 
-> 项目地址：<https://github.com/aimercat1994/fnos-videocut>　·　问题反馈与建议请提 [Issue](../../issues)
+> 项目地址：<https://github.com/aimercat1994/fnos-videocut>　·　问题反馈与建议请提 [Issue](https://github.com/aimercat1994/fnos-videocut/issues)
 
-![桌面窗口](docs/screen-1440.png)
+![桌面窗口](https://raw.githubusercontent.com/aimercat1994/FnDepot/main/videocut/Preview/1.png)
 
 双击文件时先进入播放器界面，点「剪辑」再展开剪辑区：
 
-![播放器界面](docs/screen-player.png)
-
-![打开方式小窗](docs/screen-700.png)
+![播放器界面](https://raw.githubusercontent.com/aimercat1994/FnDepot/main/videocut/Preview/2.png)
 
 ---
 
@@ -35,9 +33,9 @@
 
 ## 安装
 
-### 方式一：应用中心手动安装（推荐）
+### 方式一：从应用源安装（推荐）
 
-从 [Releases](../../releases) 下载最新的 `videocut.fpk`，在飞牛 fnOS 的**应用中心 → 手动安装**中选择该文件。
+在飞牛 fnOS 的**应用中心 → 设置 → 应用源**里添加本仓库 `https://github.com/aimercat1994/FnDepot`，然后在应用商店中安装「无损剪辑」。
 
 ### 方式二：命令行
 
@@ -75,7 +73,6 @@ fnpack build -d .
 
 剪切和合并始终只针对**原文件**，预览副本只用来显示画面、定位时间点——所以看到的时长、时间码与最终切出来的结果一致，画质也不受影响。
 
-![预览 TS 直播录像](docs/screen-ts.png)
 
 ## 端口访问（可选）
 
@@ -90,14 +87,14 @@ http://<飞牛设备 IP>:18299/
 - **改端口 / 关闭**：应用启动前读取环境变量 `VC_PORT`（`0` / `off` 表示关闭端口访问，只保留网关入口）与 `VC_BIND`（默认 `0.0.0.0`，可设为 `127.0.0.1` 只允许本机）。安装版可在这两个位置加一行 `export VC_PORT=...` 后重启应用：`/var/apps/videocut/cmd/main`（或源码里的 `cmd/main`）。
 - 网关入口（飞牛桌面 / 文件管理器「打开方式」）的行为**完全不变**：仍由飞牛校验登录并注入用户身份，权限按登录用户判定。
 
-![端口访问](docs/screen-port.png)
+![导出与任务](https://raw.githubusercontent.com/aimercat1994/FnDepot/main/videocut/Preview/3.png)
 
 ## 工作原理
 
 - **不重编码**：切割用 `ffmpeg -ss <start> -i <src> -t <dur> -c copy`，合并用 `-f concat -safe 0 -i list -c copy`。因此切点会吸附到关键帧，剪切点不是任意帧——这是无损方案的固有代价，也是它快和不掉画质的原因。
 - **服务端**：纯 Python 标准库（无需第三方依赖），同时监听两种入口：应用 `target` 目录下的 Unix Socket（由 fnOS **统一网关** `/app/videocut` 校验登录态后转发，并注入可信头 `X-Trim-Userid` / `X-Trim-Isadmin` / `X-Trim-Username`），以及 `18299` 端口（可选的免登录入口，见上一节）。
 - **前端**：原生 HTML/CSS/JS，无构建步骤、无框架，直接由后端作为静态资源提供，并注入网关前缀。
-- **权限**：应用以专用低权用户 `videocut` 运行（`run-as: package`）。除文件系统自身的可读性外，还会通过 fnOS 开放 API（`trim.file.checkUserACL` / `trim.file.userAccess` / `trim.file.path`）按**当前登录用户**复核路径权限；路径统一 realpath 规范化并拒绝 `..` 穿越。
+- **权限**：应用以专用低权用户 `videocut` 运行（`run-as: package`，并通过 `join-groups: ["video","render"]` 加入核显相关用户组，转码预览才能用 Intel QSV 硬编；拿不到渲染设备时自动退回 libx264）。除文件系统自身的可读性外，还会通过 fnOS 开放 API（`trim.file.checkUserACL` / `trim.file.userAccess` / `trim.file.path`）按**当前登录用户**复核路径权限；路径统一 realpath 规范化并拒绝 `..` 穿越。
 
 ## 目录结构
 
@@ -112,7 +109,7 @@ cmd/main                 start / stop / status 生命周期脚本（PID 文件 +
 cmd/*_init *_callback    install / upgrade / uninstall / config 钩子
 app/server/main.py       服务进程入口（创建 socket、写 pid、信号清理）
 app/server/vc/core.py    配置与环境变量、日志、路径校验
-app/server/vc/media.py   ffprobe/ffmpeg 封装：探测、关键帧、缩略图、剪切/合并命令
+app/server/vc/media.py   ffprobe/ffmpeg 封装：探测、关键帧、缩略图、预览（转封装 / 转码 / 边转边播）、剪切/合并命令
 app/server/vc/jobs.py    任务队列与进度（持久化到 jobs.json）
 app/server/vc/grants.py  文件/目录授权登记（系统选择器回传 → 可访问）
 app/server/vc/trimapi.py fnOS 开放 API 客户端（Unix Socket + TRIM_API_TOKEN）
@@ -144,7 +141,8 @@ tail -f /vol1/@appdata/videocut/server.log
 - 无损切割的切点会对齐到关键帧；需要精确到任意帧就必须重编码，本工具不做。
 - 合并要求各片段的编码参数一致（分辨率、编码器、像素格式、声道/采样率）。导出前的预检会给出警告，但可以强制继续——参数不一致时部分播放器可能无法正常播放。
 - 目前仅支持视频文件（30 种扩展名）。
-- 浏览器无法直接播放的容器（`.ts` / `.m2ts` / `.avi` / `.flv` / `.rmvb` 等）需要先生成预览副本，会在应用数据目录里占用与源文件相当的磁盘空间（14 天未使用自动清理）。
+- 浏览器无法直接播放的容器（`.ts` / `.m2ts` / `.avi` / `.flv` / `.rmvb` / `.mkv` 等）需要先生成预览副本，会在应用数据目录里占用与源文件相当的磁盘空间（14 天未使用自动清理）。
+- 有的 MP4 容器、H.264 参数都很标准，但**码流里夹着零星坏包**（例如从央视频按 MP4 直链下载的片源），Chromium 的解码器遇到一个坏包就整体放弃（`PIPELINE_ERROR_DECODE`），而 ffmpeg / VLC 会隐藏坏帧继续播。这类文件会把解码搬到服务端：ffmpeg 边解码边重编码成 H.264/AAC 分片 MP4 流给 `GET /api/pvstream` 的 `<video>`（约 1 秒出画面，拖动进度按新起点重开一条流，1–2 秒），播放器时间轴仍按源文件时间显示，源文件不动、剪切合并仍是 `-c copy`；如果之前已经整片转过一份兼容预览（`/api/preview?mode=encode`），会优先用它。**导出的无损片段同样继承这些坏包**，在浏览器类播放器里可能还是放不出来，需要用 ffmpeg 系播放器或另行转码。
 - 未上架飞牛官方应用中心，通过手动安装 `.fpk` 使用。
 
 ## 第三方组件
